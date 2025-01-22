@@ -2,7 +2,7 @@ version: '2.2'
 
 services:
   symfony_app:
-    image: ghcr.io/prenel/permis-symf-5:v1.0.3
+    image: permis-6:v1.0.0
     container_name: symfony_app
     volumes:
       - ../:/var/www/html
