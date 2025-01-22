@@ -1,0 +1,40 @@
+version: '2.2'
+
+services:
+  symfony_app:
+    image: ghcr.io/prenel/permis-symf-5:v1.0.3
+    container_name: symfony_app
+    volumes:
+      - ../:/var/www/html
+      - /var/www/html/vendor
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+    networks:
+      -  symfony_network
+    environment:
+      SYMFONY_ENV: dev
+      DATABASE_URL: postgresql://symfony:symfony@db:5432/symfony?&charset=utf8
+      #DATABASE_URL: mysql://symfony:symfony@db:3306/symfony?&charset=utf8
+
+  db:
+    image: postgres
+    container_name: symfony_db
+    environment:
+      POSTGRES_USER: symfony
+      POSTGRES_DB: symfony
+      POSTGRES_PASSWORD: symfony
+    ports:
+      - "5433:5432"
+    networks:
+      -  symfony_network
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
+
+networks:
+  symfony_network:
+    driver: bridge
