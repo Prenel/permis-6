@@ -29,8 +29,7 @@ COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 # Définir le répertoire de travail
 WORKDIR /var/www/html
 
-COPY ../composer.json ../composer.lock ../package.json ../yarn.lock /var/www/html/ 
-COPY ../vendor /var/www/html/vendor/
+COPY ../ /var/www/html/
 
 #Installer dépendance Front
 RUN yarn install
