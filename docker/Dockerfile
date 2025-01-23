@@ -2,22 +2,27 @@
 FROM php:8.2-fpm-alpine
 
 # Installer les outils nécessaires pour gérer les utilisateurs et groupes
-RUN apk add --no-cache shadow
+# RUN apk add --no-cache shadow
 
 # Créer devops
-RUN groupadd -g 1001 devops && \
-    useradd -u 1001 -g devops -m -s /bin/bash devops
+RUN addgroup -g 1001 devops && \
+    adduser -u 1001 -g devops -m -s /bin/bash devops
 
 # Ajouter www-data au groupe devops
 RUN usermod -aG devops www-data
 
 # Installer les dépendances nécessaires
-RUN apk update && apk add --no-cache bash icu-dev git unzip vim mysql-client postgresql-dev \
+RUN apk update && apk add --no-cache bash curl icu-dev git unzip vim mysql-client postgresql-dev \
     && docker-php-ext-install intl pdo pdo_pgsql pdo_mysql
 
 
 # Installer Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
+
+RUN curl -sS https://get.symfony.com/cli/installer | bash && \
+    mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
+
+RUN chmod +x /usr/local/bin/symfony
 
 # Définir le répertoire de travail
 WORKDIR /var/www/html
