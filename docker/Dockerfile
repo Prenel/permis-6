@@ -2,11 +2,11 @@
 FROM php:8.2-fpm-alpine
 
 # Installer les outils nécessaires pour gérer les utilisateurs et groupes
-# RUN apk add --no-cache shadow
+RUN apk add --no-cache shadow
 
 # Créer devops
-RUN addgroup -g 1001 devops && \
-    adduser -u 1001 -g devops -m -s /bin/bash devops
+RUN groupadd -g 1001 devops && \
+    useradd -u 1001 -g devops -m -s /bin/bash devops
 
 # Ajouter www-data au groupe devops
 RUN usermod -aG devops www-data
