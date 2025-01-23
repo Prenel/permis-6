@@ -11,7 +11,7 @@ import './styles/app.css';
 // start the Stimulus application
 import './bootstrap';
 import { createApp } from 'vue';
-import LoginPage from './views/LoginPage'
+import LoginPage from './views/LoginPage.vue'
 
 
 if (document.getElementById('app-login')){

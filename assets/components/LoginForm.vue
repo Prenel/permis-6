@@ -20,7 +20,7 @@
                 {{ error }}
             </div>
 
-            <v-button type="submit">Login</v-button>
+            <button type="submit">Login</button>
         </form>
     </div>
 </template>
@@ -48,7 +48,7 @@ export default {
 
                 console.log("Login successful", response.data);
                 localStorage.setItem("token", response.data.token);
-                this.$router.push("/");
+                // this.$router.push("/");
             } catch (err){
                 if (err.response && err.response.status == 401){
                     this.error = "Identifiant ou mot de passe invalide.";
