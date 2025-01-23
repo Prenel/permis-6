@@ -38,7 +38,8 @@ COPY ../ /var/www/html/
 RUN yarn install
 
 # Installer Vue et dépendances
-RUN yarn add vue@3 vuex@4 vue-loader@next @vue/compiler-sfc 
+RUN yarn add vue@3 vuex@4 vue-loader@next @vue/compiler-sfc axios \
+    vue-router@4 @vue/devtools sass sass-loader vuex-persist vuetify@next @mdi/font
 
 
 # Donner les permissions à www-data pour Symfony
