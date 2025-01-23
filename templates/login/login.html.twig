@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello LoginController!{% endblock %}
+
+{% block body %}
+
+<div id="app-login">
+    <login-page></login-page>
+</div>
+
+{% endblock %}
+{% block javascript %}
+ {{ parent()}}
+ {{encore_entry_script_tags('app')}}  
+{% endblock %}

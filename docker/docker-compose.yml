@@ -2,7 +2,7 @@ version: '2.2'
 
 services:
   symfony_app:
-    image: permis-6:v1.0.4
+    image: permis-6:v1.0.5
     container_name: symfony_app
     volumes:
       - ../:/var/www/html
