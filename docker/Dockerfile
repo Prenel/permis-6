@@ -14,15 +14,30 @@ RUN usermod -aG devops www-data
 # Installer les dépendances nécessaires
 RUN apk update && apk add --no-cache bash icu-dev git unzip vim mysql-client postgresql-dev \
     && docker-php-ext-install intl pdo pdo_pgsql pdo_mysql
+    
+# Installer Node et Yarn
+RUN apk add --no-cache nodejs npm
 
+# Installer Yarn 
+RUN npm install -g yarn && apk del npm
 
 # Installer Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
+
+
 
 # Définir le répertoire de travail
 WORKDIR /var/www/html
 
 COPY ../vendor /var/www/html/vendor/
+COPY ../node_modules /var/www/html/node_modules/
+
+#Installer dépendance Front
+RUN yarn install
+
+# Installer Vue et dépendances
+RUN yarn add vue@3 vuex@4 vue-loader@next @vue/compiler-sfc 
+
 
 # Donner les permissions à www-data pour Symfony
 RUN chown -R devops:devops /var/www/html
