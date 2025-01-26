@@ -1,6 +1,6 @@
 <template>
     <div class="login-page">
-        <LoginForm />
+        <LoginForm :csrfToken="csrfToken"/>
     </div>
 </template>
 
@@ -11,7 +11,13 @@ export default {
     name: "LoginPage",
     components:{
         LoginForm,
-    },     
+    },
+    props:{
+        csrfToken:{
+            type: String,
+            required:true,
+        } 
+    } 
 }
 </script>
 <style scoped>

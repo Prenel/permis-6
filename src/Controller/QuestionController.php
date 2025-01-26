@@ -11,6 +11,8 @@ class QuestionController extends AbstractController
     #[Route('/question', name: 'app_question')]
     public function index(): Response
     {
+        // $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        
         return $this->render('question/index.html.twig', [
             'controller_name' => 'QuestionController',
         ]);

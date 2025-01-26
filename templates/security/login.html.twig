@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block body %}
+    <div 
+        id="app-login" 
+        data-props='{{ {"csrfToken" : csrf_token("authenticate")}|json_encode|raw }}'>
+    </div>
+{% endblock %}

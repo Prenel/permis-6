@@ -15,13 +15,15 @@
                 <input type="password" id="password" v-model="password" placeholder="Entrez votre mot de passe" required>
                 <v-input></v-input>
             </div>
-
+            
             <div v-if="error" class="error">
                 {{ error }}
             </div>
 
             <button type="submit">Login</button>
         </form>
+
+        <p v-if="isAuthenticated" class="success">Vous êtes connecté avec succès !</p>
     </div>
 </template>
 <script>
@@ -34,21 +36,30 @@ export default {
             username: "",
             password: "",
             error: null,
+            isAuthenticated: false,
 
         };
+    },
+    props:{
+        csrfToken:{
+            type: String,
+            required:true
+        } 
     },
     methods:{
         async submitLogin(){
             this.error = null;
             try{
-                const response = await axios.post("/api/login",{
+                const response = await axios.post("/login_check",{
                     username: this.username,
-                    password: this.password
+                    password: this.password,
+                    "_csrf_token": this.csrfToken
                 });
 
-                console.log("Login successful", response.data);
-                localStorage.setItem("token", response.data.token);
-                // this.$router.push("/");
+                if (response.data.success == true){
+                    console.log(response.data);
+                    window.location.href = response.data.redirectUrl;
+                } 
             } catch (err){
                 if (err.response && err.response.status == 401){
                     this.error = "Identifiant ou mot de passe invalide.";
