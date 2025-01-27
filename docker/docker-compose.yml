@@ -6,7 +6,6 @@ services:
     container_name: symfony_app
     volumes:
       - ../:/var/www/html:cached
-      - /var/www/html/package.json
       - /var/www/html/vendor
       - /var/www/html/node_modules  
     ports:
