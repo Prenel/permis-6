@@ -32,15 +32,18 @@ RUN chmod +x /usr/local/bin/symfony
 # Définir le répertoire de travail
 WORKDIR /var/www/html
 
-COPY ../ /var/www/html/
+# Copier les fichiers nécessaires pour gérer les dépendances front-end
+COPY ../package.json ../yarn.lock /var/www/html/
 
-#Installer dépendance Front
+# Ajouter toutes les dépendances front-end avec yarn add (dont sass-loader@^14.0.0)
+RUN yarn add vue@3 vuex@4 vue-loader@next @vue/compiler-sfc axios \
+    vue-router@4 @vue/devtools sass sass-loader@^14.0.0 vuex-persist vuetify@next @mdi/font
+
+# Installer les dépendances front-end (pour synchroniser yarn.lock)
 RUN yarn install
 
-# Installer Vue et dépendances
-RUN yarn add vue@3 vuex@4 vue-loader@next @vue/compiler-sfc axios \
-    vue-router@4 @vue/devtools sass sass-loader vuex-persist vuetify@next @mdi/font
-
+# Copier le répertoire vendor généré localement après composer install
+COPY ../vendor /var/www/html/vendor
 
 # Donner les permissions à www-data pour Symfony
 RUN chown -R devops:devops /var/www/html
