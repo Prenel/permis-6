@@ -2,10 +2,11 @@ version: '2.2'
 
 services:
   symfony_app:
-    image: permis-6:v1.0.5
+    image: permis-6:v1.0.0
     container_name: symfony_app
     volumes:
-      - ../:/var/www/html
+      - ../:/var/www/html:cached
+      - /var/www/html/package.json
       - /var/www/html/vendor
       - /var/www/html/node_modules  
     ports:
