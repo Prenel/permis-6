@@ -9,11 +9,18 @@
             {{ encore_entry_link_tags('app') }}
         {% endblock %}
 
-        {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
-        {% endblock %}
+        
     </head>
     <body>
-        {% block body %}{% endblock %}
+        {% block body %}
+            <div 
+                id="app-menu" 
+                data-menu-props='{{ menuData|json_encode|raw }}'
+                data-sub-menu-props='{{ subMenuData|json_encode|raw }}'
+                ></div> 
+        {% endblock %}
     </body>
+    {% block javascripts %}
+        {{ encore_entry_script_tags('app') }}
+    {% endblock %}
 </html>

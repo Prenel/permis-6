@@ -7,13 +7,13 @@
             <div>
                 <label for="username">Username</label>
                 <input type="text" id="username" v-model="username" placeholder="Entrez votre identifiant" required>
-                <v-input></v-input>
+                
             </div>
 
             <div>
                 <label for="password">Mot de passe</label>
                 <input type="password" id="password" v-model="password" placeholder="Entrez votre mot de passe" required>
-                <v-input></v-input>
+                <v-input type="text" label="dd" placeholder="ddd">hey</v-input>
             </div>
             
             <div v-if="error" class="error">
