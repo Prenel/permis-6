@@ -48,6 +48,7 @@ class MenuSubscriber implements EventSubscriberInterface
 
         $this->twig->addGlobal('menuData', $menuData);
         $this->twig->addGlobal('subMenuData', $subMenuData);
+        $this->twig->addGlobal('display', $currentPath === '/login' ? false : true);
     }
 
     

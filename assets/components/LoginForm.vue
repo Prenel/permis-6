@@ -3,32 +3,41 @@
 
         <h1>Login</h1>
 
-        <form @submit.prevent="submitLogin">
-            <div>
-                <label for="username">Username</label>
-                <input type="text" id="username" v-model="username" placeholder="Entrez votre identifiant" required>
-                
-            </div>
+        
 
-            <div>
-                <label for="password">Mot de passe</label>
-                <input type="password" id="password" v-model="password" placeholder="Entrez votre mot de passe" required>
-                <v-input type="text" label="dd" placeholder="ddd">hey</v-input>
-            </div>
+        <v-form @submit.prevent="submitLogin" >
+            
+                <v-text-field
+                    label="Identifiant"
+                    :rules="[rules.required]"
+                    v-model="username"
+                    placeholder="Entrez votre identifiant"
+                    class="input"
+                    ></v-text-field>                
+            
+
+            
+                <v-text-field
+                    label="Mot de passe"
+                    :rules="[rules.required]"
+                    v-model="password"
+                    placeholder="Entrez votre mot de passe"
+                    class="input"
+                    ></v-text-field>                
+           
             
             <div v-if="error" class="error">
                 {{ error }}
             </div>
 
             <button type="submit">Login</button>
-        </form>
-
-        <p v-if="isAuthenticated" class="success">Vous êtes connecté avec succès !</p>
+        </v-form>
+                
     </div>
 </template>
 <script>
 import axios from "axios";
-
+import { required } from '../rules' 
 export default {
     name: "LoginForm",
     data(){
@@ -37,6 +46,9 @@ export default {
             password: "",
             error: null,
             isAuthenticated: false,
+            rules: {
+                required,
+            } 
 
         };
     },
@@ -49,23 +61,25 @@ export default {
     methods:{
         async submitLogin(){
             this.error = null;
-            try{
-                const response = await axios.post("/login_check",{
-                    username: this.username,
-                    password: this.password,
-                    "_csrf_token": this.csrfToken
-                });
-
-                if (response.data.success == true){
-                    console.log(response.data);
-                    window.location.href = response.data.redirectUrl;
-                } 
-            } catch (err){
-                if (err.response && err.response.status == 401){
-                    this.error = "Identifiant ou mot de passe invalide.";
-                } else {
-                    this.error = "Une erreur est survenur, Essayer une nouvelle fois.";
-                } 
+            if (this.username !== "" && this.password !== "" && this.csrfToken !== ""){
+                try{
+                    const response = await axios.post("/login_check",{
+                        username: this.username,
+                        password: this.password,
+                        "_csrf_token": this.csrfToken
+                    });
+    
+                    if (response.data.success == true){
+                        console.log(response.data);
+                        window.location.href = response.data.redirectUrl;
+                    } 
+                } catch (err){
+                    if (err.response && err.response.status == 401){
+                        this.error = "Identifiant ou mot de passe invalide.";
+                    } else {
+                        this.error = "Une erreur est survenur, Essayer une nouvelle fois.";
+                    } 
+                }
             } 
         } 
     } 
@@ -74,12 +88,13 @@ export default {
 </script>
 <style scoped> 
 .login-form { 
-    max-width: 400px; 
+    max-width: 400px;
+    min-width: 400px;
     margin: 0 auto; 
     padding: 20px; 
     border: 1px solid #ccc; 
     border-radius: 5px; 
-} 
+}
 .login-form h1 { 
     text-align: center; 
     margin-bottom: 20px; 
@@ -87,11 +102,7 @@ export default {
 .login-form div { 
     margin-bottom: 15px; 
 } 
-.login-form label { 
-    display: block; 
-    margin-bottom: 5px; 
-} 
-.login-form input { 
+.login-form .input { 
     width: 100%; 
     padding: 10px; 
     font-size: 16px; 

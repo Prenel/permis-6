@@ -8,17 +8,33 @@
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
         {% endblock %}
-
+        
+        <style>
+           #container-app{
+            background: #fff;
+            margin: 100px 30px 0 110px;
+           } 
+           #container-vue{
+            margin-left: 30px;
+            padding-top: 30px;
+           }  
+        </style>
         
     </head>
     <body>
-        {% block body %}
+        {% if display %}
             <div 
                 id="app-menu" 
                 data-menu-props='{{ menuData|json_encode|raw }}'
                 data-sub-menu-props='{{ subMenuData|json_encode|raw }}'
-                ></div> 
-        {% endblock %}
+            ></div> 
+        {% endif %}
+            
+            <div id="container-app">
+                <div id="container-vue">
+                    {% block body %}{% endblock %}
+                </div>
+            </div>
     </body>
     {% block javascripts %}
         {{ encore_entry_script_tags('app') }}
