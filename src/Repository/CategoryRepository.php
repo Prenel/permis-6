@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -19,6 +20,33 @@ class CategoryRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Category::class);
+    }
+
+    public function getPaginatedCategories(int $page, int $limit, array $filters = []): array
+    {
+        $queryBuilder = $this->createQueryBuilder('c');
+
+        // if (!empty($filters['name'])){
+        //     $queryBuilder->andWhere('c.name LIKE :name')
+        //         ->setParameter('name', '%' . $filters['name'] . '%');
+        // } 
+
+        $queryBuilder->setFirstResult( ($page - 1) * $limit)
+            ->setMaxResults($limit);
+
+        $paginator = new Paginator($queryBuilder);
+        
+        $data = [];
+        foreach ($paginator as $category){
+            $data[] = $category; 
+        }    
+
+        return [
+            'data' => $data,
+            'total' => count($paginator),
+            'page' => $page,
+            'limit' => $limit
+        ];
     }
 
 //    /**

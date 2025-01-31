@@ -4,6 +4,7 @@ namespace App\Controller\Admin ;
 
 use App\Entity\Category;
 use App\Entity\SubCategory;
+use App\Repository\CategoryRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,32 +12,43 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
 class AdminController extends AbstractController
 {
-    #[Route('/admin/category', name: 'category_list')]
-    public function categoryList(): Response
+    #[Route('/admin/category', name: 'category_view')]
+    public function categoryView(): Response
     {
         return $this->render('admin/category.html.twig', [
             'controller_name' => 'AdminController',
         ]);
     }
 
+    #[Route('/admin/category/list', name: 'category_list')]
+    public function categoryList(Request $request, CategoryRepository $categoryRepo): Response
+    {   
+        $page = $request->query->getInt('page', 1);
+        $limit = $request->query->getInt('limit', 10);
+        $filters = $request->query->all();
+        
+        $result = $categoryRepo->getPaginatedCategories($page, $limit, $filters);
+
+        return $this->json(['result' => $result], 200,[],  ['groups' => 'category-read']);
+    }
+
     #[Route('/admin/category/add', name: 'category_add')]
-    public function categoryAdd(Request $request, EntityManagerInterface $em, SerializerInterface $serializer, NormalizerInterface $normalizer): Response
+    public function categoryAdd(Request $request, EntityManagerInterface $em, SerializerInterface $serializer): Response
     {
         $user = $this->getUser();
         $data = json_decode($request->getContent(), true);
         
-        if (empty($data['categoryName'])) {
+        if (empty($data['category']['name'])) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'Veuillez remplir le nom de la catégorie.'
             ], Response::HTTP_BAD_REQUEST);    
         }
-        if (empty($data['subCategories'])) {
+        if (empty($data['category']['subCategories'])) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'Veuillez remplir au moin une sous-catégorie.'
@@ -44,7 +56,7 @@ class AdminController extends AbstractController
         }
 
         $category = new Category();
-        foreach ($data['subCategories'] as $dataSubCategory) {
+        foreach ($data['category']['subCategories'] as $dataSubCategory) {
             
             $subCategory = new SubCategory();
             $subCategory->setName($dataSubCategory['value']);
@@ -53,7 +65,7 @@ class AdminController extends AbstractController
             $em->persist($subCategory);
             $category->addSubCategory($subCategory);
         }
-        $category->setName($data['categoryName']);
+        $category->setName($data['category']['name']);
         $category->setCreatedBy($user);
         $category->setCreatedAt(new DateTimeImmutable());
 

@@ -37,7 +37,8 @@ export default {
 </script> 
 <style scoped> 
 .header { 
-    position: fixed; 
+    position: fixed;
+    z-index: 1000;
     top: 0; 
     width: 100vw; 
     height: 75px; 
@@ -48,7 +49,8 @@ export default {
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); 
 }
 .sidebar { 
-    position: fixed; 
+    position: fixed;
+    z-index: 500;
     left: 0; 
     top: 0; 
     height: 

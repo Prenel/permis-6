@@ -1,7 +1,8 @@
 import './styles/app.css';
 import './bootstrap';
 import { createApp } from 'vue';
-import {  createVuetify } from 'vuetify';
+import { createVuetify } from 'vuetify';
+import { createPinia } from 'pinia';
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
 import LoginPage from './views/LoginPage'
@@ -32,5 +33,8 @@ if (document.getElementById('app-menu')){
 if (document.getElementById('app-category')){
     // const elementLogin = document.getElementById('app-login');
     // const propsLogin = JSON.parse(elementLogin.getAttribute('data-login-props'));
-    createApp(CategoryListPage).use(vuetify).mount('#app-category');
+    createApp(CategoryListPage)
+        .use(vuetify)
+        .use(createPinia())
+        .mount('#app-category');
 }
