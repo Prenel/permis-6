@@ -36,8 +36,8 @@ WORKDIR /var/www/html
 COPY ../package.json ../yarn.lock /var/www/html/
 
 # Ajouter toutes les dépendances front-end avec yarn add (dont sass-loader@^14.0.0)
-RUN yarn add vue@3 vuex@4 vue-loader@next @vue/compiler-sfc axios \
-    vue-router@4 @vue/devtools sass sass-loader@^14.0.0 vuex-persist vuetify@next @mdi/font
+RUN yarn add vue@3 pinia vue-loader@next @vue/compiler-sfc axios \
+    vue-router@4 @vue/devtools sass sass-loader@^14.0.0 vuex-persist vuetify@next @mdi/font 
 
 # Installer les dépendances front-end (pour synchroniser yarn.lock)
 RUN yarn install
