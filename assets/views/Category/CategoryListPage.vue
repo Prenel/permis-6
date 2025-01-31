@@ -4,7 +4,7 @@
             
             <h1>{{title}}</h1>
             
-            <v-btn>Ajouter <v-icon>mdi-plus</v-icon></v-btn>
+            <v-btn @click="toggleDialog">Ajouter <v-icon>mdi-plus</v-icon></v-btn>
             <Table :header="tableHeader">
                 <template #thead>
                     <tr>
@@ -30,18 +30,47 @@
                 </template>
             </Table>
         </v-container>
+        
+        <v-dialog v-model="dialog" @update:modelValue="dialogClosed" max-width="500">
+            <v-card>
+                <v-card-title>Ajouter une catégorie</v-card-title>
+                <v-container>
+                    <div class="form">
+                        <CategoryForm ref="categoryForm" @categorySave="toggleDialog" />
+                    </div>    
+                </v-container>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <div>
+                        <v-btn text @click="toggleDialog" >Fermer</v-btn> 
+                        <v-btn 
+                            @click="save" 
+                            varitant="outlined" 
+                            color="green"
+                        >Enregistrer</v-btn>
+                    </div>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 <script setup>
 import Table from '../../components/Table.vue';
+import CategoryForm from '../../components/category/CategoryForm.vue'
 import { ref, reactive } from 'vue';
+import axios from "axios";
 
 const title = ref('Liste des catégories');
+const dialog = ref(false);
+const categoryForm = ref(null);
+
+
+// Tableau
 const tableHeader = reactive([
     {'name': 'Nom'},
     {'name': 'Sous-catégorie'},
+    {'name': 'Action'},
 ]);
-
 const tableData = reactive([
     {'id': 1, 'name': 'Sécurité', 'subCategories': [
         {'id': 1, 'name': 'Risque'},
@@ -60,14 +89,27 @@ const tableData = reactive([
         ] 
     }, 
 ]);
+
+// Dialog
+const toggleDialog = () => {
+    console.log("hello");
+    !dialog.value ? dialog.value = true : dialog.value = false;
+    dialogClosed();
+};
+const dialogClosed = () => {
+    if (dialog.value == false) {
+        categoryForm.value.reInitData();
+    }
+}
+const save = () => {
+    categoryForm.value.addCategory();
+} 
+
 </script>
 <style scoped>
 .category-page{
-    
     display: flex;
     justify-content: center;
-    align-items: center;
-    
+    align-items: center;   
 } 
-
 </style>

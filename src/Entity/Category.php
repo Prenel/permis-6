@@ -6,6 +6,7 @@ use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 class Category
@@ -13,15 +14,19 @@ class Category
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['category-read'])]  
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['category-read'])]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Groups(['category-read'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['category-read'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(nullable: true)]
@@ -29,15 +34,18 @@ class Category
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['category-read'])]
     private ?User $createdBy = null;
 
     #[ORM\ManyToOne]
+    #[Groups(['category-read'])]
     private ?User $updatedBy = null;
 
     #[ORM\ManyToOne]
     private ?User $deletedBy = null;
 
-    #[ORM\OneToMany(targetEntity: SubCategory::class, mappedBy: 'category', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: SubCategory::class, mappedBy: 'category', orphanRemoval: true)]  
+    #[Groups(['category-read'])]
     private Collection $subCategories;
 
     public function __construct()

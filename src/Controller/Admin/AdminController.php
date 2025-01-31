@@ -2,9 +2,17 @@
 
 namespace App\Controller\Admin ;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Entity\Category;
+use App\Entity\SubCategory;
+use DateTimeImmutable;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class AdminController extends AbstractController
 {
@@ -17,11 +25,46 @@ class AdminController extends AbstractController
     }
 
     #[Route('/admin/category/add', name: 'category_add')]
-    public function categoryAdd(): Response
+    public function categoryAdd(Request $request, EntityManagerInterface $em, SerializerInterface $serializer, NormalizerInterface $normalizer): Response
     {
-        return $this->render('admin/category.html.twig', [
-            'controller_name' => 'AdminController',
-        ]);
+        $user = $this->getUser();
+        $data = json_decode($request->getContent(), true);
+        
+        if (empty($data['categoryName'])) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Veuillez remplir le nom de la catégorie.'
+            ], Response::HTTP_BAD_REQUEST);    
+        }
+        if (empty($data['subCategories'])) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Veuillez remplir au moin une sous-catégorie.'
+            ], Response::HTTP_BAD_REQUEST);    
+        }
+
+        $category = new Category();
+        foreach ($data['subCategories'] as $dataSubCategory) {
+            
+            $subCategory = new SubCategory();
+            $subCategory->setName($dataSubCategory['value']);
+            $subCategory->setCreatedBy($user);
+            $subCategory->setCreatedAt(new DateTimeImmutable());
+            $em->persist($subCategory);
+            $category->addSubCategory($subCategory);
+        }
+        $category->setName($data['categoryName']);
+        $category->setCreatedBy($user);
+        $category->setCreatedAt(new DateTimeImmutable());
+
+        $em->persist($category);
+        $em->flush();
+
+        return new JsonResponse([
+            'success' => true,
+            'category' => $serializer->serialize($category, 'json',['groups' => 'category-read']),
+            'message' => 'La catégorie a bien été créé.'
+        ], Response::HTTP_CREATED);
     }
 
     #[Route('/admin/category/edit/{id}', name: 'category_edit')]
