@@ -56,6 +56,9 @@ class AdminController extends AbstractController
         }
 
         $category = new Category();
+        $category->setName($data['category']['name']);
+        $category->setCreatedBy($user);
+        $category->setCreatedAt(new DateTimeImmutable());
         foreach ($data['category']['subCategories'] as $dataSubCategory) {
             
             $subCategory = new SubCategory();
@@ -65,26 +68,68 @@ class AdminController extends AbstractController
             $em->persist($subCategory);
             $category->addSubCategory($subCategory);
         }
-        $category->setName($data['category']['name']);
-        $category->setCreatedBy($user);
-        $category->setCreatedAt(new DateTimeImmutable());
+        
 
         $em->persist($category);
         $em->flush();
 
-        return new JsonResponse([
+        return $this->json([
             'success' => true,
-            'category' => $serializer->serialize($category, 'json',['groups' => 'category-read']),
+            'category' => $category,
             'message' => 'La catégorie a bien été créé.'
-        ], Response::HTTP_CREATED);
+        ], Response::HTTP_CREATED,[],  ['groups' => 'category-read']);
     }
 
-    #[Route('/admin/category/edit/{id}', name: 'category_edit')]
-    public function categoryEdit(): Response
+    #[Route('/admin/category/edit', name: 'category_edit')]
+    public function categoryEdit(Request $request, EntityManagerInterface $em, CategoryRepository $categoryRepo): Response
     {
-        return $this->render('admin/category.html.twig', [
-            'controller_name' => 'AdminController',
-        ]);
+        $user = $this->getUser();
+        $data = json_decode($request->getContent(), true);
+        
+        $categoryProxy = $categoryRepo->find($data['category']['id']);
+
+        if (empty($data['category']['name'])) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Veuillez remplir le nom de la catégorie.'
+            ], Response::HTTP_BAD_REQUEST);    
+        }
+        if (empty($data['category']['subCategories'])) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Veuillez remplir au moin une sous-catégorie.'
+            ], Response::HTTP_BAD_REQUEST);    
+        }
+
+        
+        
+        $categoryProxy
+            ->setName($data['category']['name'])
+            ->setUpdatedBy($user)
+            ->setUpdatedAt(new DateTimeImmutable());
+        foreach ($data['category']['subCategories'] as $dataSubCategory) {
+            foreach ($categoryProxy->getSubCategories() as $subCategoryProxy) {
+                if ($dataSubCategory['id'] === $subCategoryProxy->getId()){
+                    
+                    $subCategoryProxy
+                        ->setName($dataSubCategory['value'])
+                        ->setUpdatedBy($user)
+                        ->setUpdatedAt(new DateTimeImmutable());
+        
+                    $em->persist($subCategoryProxy);
+                }     
+            }
+        }
+        
+
+        $em->persist($categoryProxy);
+        $em->flush();
+
+        return $this->json([
+            'success' => true,
+            'category' => $categoryProxy,
+            'message' => 'La catégorie a bien été mis à jour.'
+        ], Response::HTTP_OK,[],  ['groups' => 'category-read']);
     }
 
     #[Route('/admin/category/delete', name: 'category_delete')]

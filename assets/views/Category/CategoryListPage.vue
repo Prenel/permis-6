@@ -4,7 +4,7 @@
             
             <h1>{{title}}</h1>
             
-            <v-btn class="mt-5" color="blue" @click="toggleDialog">Ajouter <v-icon>mdi-plus</v-icon></v-btn>
+            <v-btn class="mt-5" color="blue" @click="toggleDialog(null, 'add')">Ajouter <v-icon>mdi-plus</v-icon></v-btn>
             <Table :header="tableHeader">
                 <template #thead>
                     <tr>
@@ -26,7 +26,7 @@
                             </v-chip>  
                         </td>
                         <td>
-                            <v-btn elevated class="ma-1" color="blue">
+                            <v-btn @click="toggleDialog(category, 'edit')" elevated class="ma-1" color="blue">
                                 <v-icon>mdi-pencil</v-icon>
                             </v-btn>
                             <v-btn elevated class="ma-1" color="red">
@@ -52,7 +52,7 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <div>
-                        <v-btn text @click="toggleDialog" >Fermer</v-btn> 
+                        <v-btn text @click="toggleDialog(null, null)" >Fermer</v-btn> 
                         <v-btn 
                             @click="save" 
                             varitant="outlined" 
@@ -80,14 +80,14 @@ import { ref, reactive, onMounted, computed, watch } from 'vue';
 import axios from "axios";
 import { useCategoryStore } from "../../stores/categoryStore";
 
+// --------------------------------------------------------- Add
+
+
 const categoryStore = useCategoryStore();
 const store = useCategoryStore();
 const title = ref('Liste des catégories');
 const categoryForm = ref(null);
-
-onMounted(() => {
-    store.fetchCategories();
-})
+const action = ref("");
 
 // Tableau
 const tableHeader = reactive([
@@ -110,26 +110,47 @@ const message = ref("");
 const colorMessage = ref("");
 
 
-// ------------------ Actions
+// --------------------------------------------------------- Actions
 
 // Ajouter une category
 const save = () => {
-    store.addCategory()
-        .then(response => {
-            if (response.data.success == true){
 
-                toggleDialog();                
-                message.value = response.data.message;
-                viewableSnackbar.value =  true;
-                colorMessage.value = "success";
+    if (action.value == 'edit'){
+        store.editCategory()
+            .then(response => {
+                if (response.data.success == true){
+
+                    toggleDialog(null, null);                
+                    message.value = response.data.message;
+                    viewableSnackbar.value =  true;
+                    colorMessage.value = "success";
+                } 
+        }).catch(error => {
+            if (error.response.data.success == false){
+                message.value = error.response.data.message;
+                viewableSnackbar.value = true;
+                colorMessage.value = "warning"
             } 
-    }).catch(error => {
-        if (error.response.data.success == false){
-            message.value = error.response.data.message;
-            viewableSnackbar.value = true;
-            colorMessage.value = "warning"
-        } 
-    });
+        });    
+    } else {
+        store.addCategory()
+            .then(response => {
+                if (response.data.success == true){
+    
+                    toggleDialog(null, null);                
+                    message.value = response.data.message;
+                    viewableSnackbar.value =  true;
+                    colorMessage.value = "success";
+                } 
+        }).catch(error => {
+            if (error.response.data.success == false){
+                message.value = error.response.data.message;
+                viewableSnackbar.value = true;
+                colorMessage.value = "warning"
+            } 
+        }); 
+    } 
+
 }
 
 // Ajouter des coleur au badge chips
@@ -139,17 +160,45 @@ const getChipColor = (index) => {
 }
 
 // Fermer Ouvrir la PopUp
-const toggleDialog = () => {
+const toggleDialog = (category, actionClick) => {
+    action.value = actionClick;
+
+    if (category !== null){
+        store.category.id = category.id;
+        store.category.name = category.name;
+        store.category.subCategories = []; 
+        
+        category.subCategories.forEach(subCategory => {
+            store.category.subCategories.push(
+                {
+                    'id': subCategory.id, 
+                    'name': `subCategory-${store.countSubCategories}`, 
+                    'value': subCategory.name,  
+                }
+            )
+            store.countSubCategories++;
+        });
+
+    } 
+
     !dialog.value ? dialog.value = true : dialog.value = false;
 };
 
+// --------------------------------------------------------- Hook
+
+// Vide le model si ce n'est pas edit
 watch(dialog, () => {
-    store.category.name = "";
-    store.countSubCategories = 1;
-    store.category.subCategories.splice(1);
-    store.category.subCategories[0].value = "";
+    if (action.value !== "edit"){
+        store.category.name = "";
+        store.countSubCategories = 1;
+        store.category.subCategories.splice(1);
+        store.category.subCategories[0].value = "";
+    } 
 });
 
+onMounted(() => {
+    store.fetchCategories();
+})
 
 </script>
 <style scoped>

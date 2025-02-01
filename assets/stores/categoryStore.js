@@ -8,7 +8,8 @@ export const useCategoryStore = defineStore("categoryStore", () => {
     const categories = ref([]);
     const countSubCategories = ref(1);
     const category = ref({
-        'name': "",
+        id: 0,
+        name: "",
         subCategories: [{'name': `subCategory-${countSubCategories.value}`, 'value': "" }] 
     });
     const total = ref(0);
@@ -36,6 +37,12 @@ export const useCategoryStore = defineStore("categoryStore", () => {
         });
     }  
 
+    const editCategory = async () => {
+        return await axios.post('/admin/category/edit', {
+            category: category.value
+        });
+    }  
+
     return {
         categories,
         category,
@@ -43,6 +50,7 @@ export const useCategoryStore = defineStore("categoryStore", () => {
         countSubCategories,
         fetchCategories,
         addCategory,
+        editCategory,
     } 
 
 });
