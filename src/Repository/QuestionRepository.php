@@ -3,8 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Question;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Question>
@@ -19,6 +20,33 @@ class QuestionRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Question::class);
+    }
+
+    public function getPaginatedQuestions(int $page, int $limit, array $filters = []): array
+    {
+        $queryBuilder = $this->createQueryBuilder('q');
+
+        // if (!empty($filters['name'])){
+        //     $queryBuilder->andWhere('c.name LIKE :name')
+        //         ->setParameter('name', '%' . $filters['name'] . '%');
+        // } 
+
+        $queryBuilder->setFirstResult( ($page - 1) * $limit)
+            ->setMaxResults($limit);
+
+        $paginator = new Paginator($queryBuilder);
+        
+        $data = [];
+        foreach ($paginator as $question){
+            $data[] = $question; 
+        }    
+
+        return [
+            'data' => $data,
+            'total' => count($paginator),
+            'page' => $page,
+            'limit' => $limit
+        ];
     }
 
 //    /**

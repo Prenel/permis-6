@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello QuestionController!{% endblock %}
+
+{% block body %}
+{{ parent()}}
+    <div
+        id="app-question">
+    </div>
+{% endblock %}
+{% block javascript %}
+{{parent()}}
+{{encore_entry_script_tags('app')}}  
+{% endblock %}

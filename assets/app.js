@@ -7,6 +7,7 @@ import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css'
 import LoginPage from './views/LoginPage'
 import CategoryListPage from './views/Category/CategoryListPage'
+import QuestionListPage from './views/Question/QuestionListPage'
 import Menu from './components/partial/Menu'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
@@ -31,10 +32,15 @@ if (document.getElementById('app-menu')){
     }).use(vuetify).mount('#app-menu');
 }
 if (document.getElementById('app-category')){
-    // const elementLogin = document.getElementById('app-login');
-    // const propsLogin = JSON.parse(elementLogin.getAttribute('data-login-props'));
     createApp(CategoryListPage)
         .use(vuetify)
         .use(createPinia())
         .mount('#app-category');
+}
+
+if (document.getElementById('app-category')){
+    createApp(QuestionListPage)
+        .use(vuetify)
+        .use(createPinia())
+        .mount('#app-question');
 }

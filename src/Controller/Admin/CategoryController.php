@@ -14,7 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class AdminController extends AbstractController
+class CategoryController extends AbstractController
 {
     #[Route('/admin/category', name: 'category_view')]
     public function categoryView(): Response
