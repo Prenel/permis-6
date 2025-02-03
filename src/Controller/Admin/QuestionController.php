@@ -26,7 +26,7 @@ class QuestionController extends AbstractController
         $filters = $request->query->all();
 
         $result = $questionRepo->getPaginatedQuestions($page, $limit, $filters);
-        dd($result);
+        // dd($result);
         return $this->json(['result' => $result], 200, [],  ['groups' => 'question-read']);
     }
 }

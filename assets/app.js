@@ -38,7 +38,7 @@ if (document.getElementById('app-category')){
         .mount('#app-category');
 }
 
-if (document.getElementById('app-category')){
+if (document.getElementById('app-question')){
     createApp(QuestionListPage)
         .use(vuetify)
         .use(createPinia())

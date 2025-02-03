@@ -6,7 +6,7 @@ import axios from 'axios';
 export const useQuestionStore = defineStore("questionStore", () => {
 
     const questions = ref([]);
-    const countAnswer = ref(1);
+    const countAnswers = ref(1);
     const question = ref({
         id: 0,
         text: "",
@@ -47,7 +47,7 @@ export const useQuestionStore = defineStore("questionStore", () => {
         questions,
         question,
         total,
-        countSubQuestions,
+        countAnswers,
         fetchQuestions,
         addQuestion,
         editQuestion,

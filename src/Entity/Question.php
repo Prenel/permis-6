@@ -19,6 +19,9 @@ class Question
     #[ORM\Column(type: Types::TEXT)]
     private ?string $text = null;
 
+    #[ORM\OneToMany(targetEntity: Answer::class, mappedBy: 'question', orphanRemoval: true)]
+    private Collection $answers;
+
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $createdAt = null;
 
@@ -38,8 +41,9 @@ class Question
     #[ORM\ManyToOne]
     private ?User $deletedBy = null;
 
-    #[ORM\OneToMany(targetEntity: Answer::class, mappedBy: 'question', orphanRemoval: true)]
-    private Collection $answers;
+    #[ORM\ManyToOne(inversedBy: 'questions')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?SubCategory $subCategory = null;
 
     public function __construct()
     {
@@ -161,6 +165,18 @@ class Question
                 $answer->setQuestion(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSubCategory(): ?SubCategory
+    {
+        return $this->subCategory;
+    }
+
+    public function setSubCategory(?SubCategory $subCategory): static
+    {
+        $this->subCategory = $subCategory;
 
         return $this;
     }

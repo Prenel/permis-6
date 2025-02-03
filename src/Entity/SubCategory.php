@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\SubCategoryRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -41,6 +43,14 @@ class SubCategory
     #[ORM\ManyToOne(inversedBy: 'subCategories')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
+
+    #[ORM\OneToMany(targetEntity: Question::class, mappedBy: 'subCategory', orphanRemoval: true)]
+    private Collection $questions;
+
+    public function __construct()
+    {
+        $this->questions = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -146,6 +156,36 @@ class SubCategory
     public function setCategory(?Category $category): static
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Question>
+     */
+    public function getQuestions(): Collection
+    {
+        return $this->questions;
+    }
+
+    public function addQuestion(Question $question): static
+    {
+        if (!$this->questions->contains($question)) {
+            $this->questions->add($question);
+            $question->setSubCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuestion(Question $question): static
+    {
+        if ($this->questions->removeElement($question)) {
+            // set the owning side to null (unless already changed)
+            if ($question->getSubCategory() === $this) {
+                $question->setSubCategory(null);
+            }
+        }
 
         return $this;
     }
