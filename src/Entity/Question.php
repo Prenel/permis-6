@@ -45,6 +45,9 @@ class Question
     #[ORM\JoinColumn(nullable: false)]
     private ?SubCategory $subCategory = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $type = null;
+
     public function __construct()
     {
         $this->answers = new ArrayCollection();
@@ -177,6 +180,18 @@ class Question
     public function setSubCategory(?SubCategory $subCategory): static
     {
         $this->subCategory = $subCategory;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
 
         return $this;
     }
