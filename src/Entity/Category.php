@@ -14,11 +14,11 @@ class Category
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['category-read'])]  
+    #[Groups(['category-read', 'category-field', 'question-read'])] 
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['category-read'])]
+    #[Groups(['category-read', 'category-field', 'question-read'])]
     private ?string $name = null;
 
     #[ORM\Column]
@@ -45,7 +45,7 @@ class Category
     private ?User $deletedBy = null;
 
     #[ORM\OneToMany(targetEntity: SubCategory::class, mappedBy: 'category', orphanRemoval: true)]  
-    #[Groups(['category-read'])]
+    #[Groups(['category-read', 'category-field' ])]
     private Collection $subCategories;
 
     public function __construct()

@@ -71,7 +71,7 @@ class CategoryFixtures extends Fixture implements DependentFixtureInterface
             "Mise en conformité RGPD" 
         ];  
         $subCategoryNames = ["Avancé", "Débutant", "Intermédiaire", "Pro", "Niveau 1", "Niveau 2", "Niveau 3", "Niveau 4", "Expert", "Spécial"]; 
-        for ($i = 0; $i < 50; $i++) { 
+        for ($i = 0; $i < 15; $i++) { 
             // Sélectionne un nom unique de catégorie et l'ajoute pour ne pas le réutiliser 
             $categoryKey = array_rand($categoryNames); $categoryName = $categoryNames[$categoryKey]; 
             // Ajoute un identifiant unique 

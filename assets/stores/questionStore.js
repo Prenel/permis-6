@@ -10,7 +10,12 @@ export const useQuestionStore = defineStore("questionStore", () => {
     const question = ref({
         id: 0,
         text: "",
-        subQuestions: [] 
+        type: "true_false",
+        subCategory: null,
+        category: null,
+        answers: [
+           { id: null, text: null, isTrue: false, nameForm: `answer-${countAnswers.value}` } 
+        ],
     });
     const total = ref(0);
     
@@ -19,7 +24,7 @@ export const useQuestionStore = defineStore("questionStore", () => {
             const response = await axios.get("/admin/question/list",{
                 params: {page, limit} 
             });
-            console.log(response.data.result.data);
+            
             if (response.status == 200) {
                 
               questions.value = response.data.result.data;

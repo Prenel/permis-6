@@ -73,12 +73,12 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
         //     return new RedirectResponse($targetPath);
         // }
 
-        $redirectUrl = $this->urlGenerator->generate('question_list');
+        $redirectUrl = $this->urlGenerator->generate('question_view');
         error_log('CustomAuthenticator onAuthenticationSuccess(): Redirecting to default: ' . $redirectUrl);
         
         return new JsonResponse([
             'success' => true,
-            'redirectUrl' => $this->urlGenerator->generate('question_list'),
+            'redirectUrl' => $this->urlGenerator->generate('question_view'),
         ], 200);
     }
 

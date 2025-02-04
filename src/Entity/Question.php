@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\QuestionRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\QuestionRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: QuestionRepository::class)]
 class Question
@@ -14,15 +15,29 @@ class Question
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['question-read'])]
     private ?int $id = null;
-
+    
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['question-read'])]
     private ?string $text = null;
+    
+    #[ORM\Column(length: 255)]
+    #[Groups(['question-read'])]
+    private ?string $type = null;
 
     #[ORM\OneToMany(targetEntity: Answer::class, mappedBy: 'question', orphanRemoval: true)]
+    #[Groups(['question-read'])]
     private Collection $answers;
 
+    #[ORM\ManyToOne(inversedBy: 'questions')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['question-read'])]
+    private ?SubCategory $subCategory = null;
+
+
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['question-read'])]
     private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
@@ -40,13 +55,6 @@ class Question
 
     #[ORM\ManyToOne]
     private ?User $deletedBy = null;
-
-    #[ORM\ManyToOne(inversedBy: 'questions')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?SubCategory $subCategory = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $type = null;
 
     public function __construct()
     {

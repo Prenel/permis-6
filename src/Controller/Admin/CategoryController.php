@@ -37,7 +37,7 @@ class CategoryController extends AbstractController
     }
 
     #[Route('/admin/category/add', name: 'category_add')]
-    public function categoryAdd(Request $request, EntityManagerInterface $em, SerializerInterface $serializer): Response
+    public function categoryAdd(Request $request, EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
         $data = json_decode($request->getContent(), true);
@@ -102,22 +102,34 @@ class CategoryController extends AbstractController
         }
 
         
-        
+        // dd($data);
         $categoryProxy
             ->setName($data['category']['name'])
             ->setUpdatedBy($user)
             ->setUpdatedAt(new DateTimeImmutable());
         foreach ($data['category']['subCategories'] as $dataSubCategory) {
+
+            if (empty($dataSubCategory['id'])){
+                $subCategory = new SubCategory();
+                $subCategory->setName($dataSubCategory['value']);
+                $subCategory->setCreatedBy($user);
+                $subCategory->setCreatedAt(new DateTimeImmutable());
+                $em->persist($subCategory);
+                $categoryProxy->addSubCategory($subCategory);  
+            }
+
             foreach ($categoryProxy->getSubCategories() as $subCategoryProxy) {
-                if ($dataSubCategory['id'] === $subCategoryProxy->getId()){
-                    
-                    $subCategoryProxy
-                        ->setName($dataSubCategory['value'])
-                        ->setUpdatedBy($user)
-                        ->setUpdatedAt(new DateTimeImmutable());
-        
-                    $em->persist($subCategoryProxy);
-                }     
+                if (!empty($dataSubCategory['id'])){
+                    if ($dataSubCategory['id'] === $subCategoryProxy->getId()){
+                        
+                        $subCategoryProxy
+                            ->setName($dataSubCategory['value'])
+                            ->setUpdatedBy($user)
+                            ->setUpdatedAt(new DateTimeImmutable());
+            
+                        $em->persist($subCategoryProxy);
+                    }     
+                } 
             }
         }
         
@@ -138,5 +150,13 @@ class CategoryController extends AbstractController
         return $this->render('admin/category.html.twig', [
             'controller_name' => 'AdminController',
         ]);
+    }
+
+    #[Route('/admin/category/list/field', name: 'category_list_field')]
+    public function categoryListField(Request $request, CategoryRepository $categoryRepo): Response
+    {   
+        $categories = $categoryRepo->findAll();
+        
+        return $this->json(['data' => $categories], 200,[],  ['groups' => 'category-field']);
     }
 }

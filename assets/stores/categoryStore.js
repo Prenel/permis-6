@@ -31,6 +31,20 @@ export const useCategoryStore = defineStore("categoryStore", () => {
         } 
     }
 
+    const fetchCategoriesField = async () => {
+        try {
+            const response = await axios.get("/admin/category/list/field");
+            
+            if (response.status == 200) {
+              categories.value = response.data.data;
+              total.value = response.data.result.total;
+            }
+
+        } catch(error){
+            console.log(error.response);
+        } 
+    }
+
     const addCategory = async () => {
         return await axios.post('/admin/category/add', {
             category: category.value
@@ -49,6 +63,7 @@ export const useCategoryStore = defineStore("categoryStore", () => {
         total,
         countSubCategories,
         fetchCategories,
+        fetchCategoriesField,
         addCategory,
         editCategory,
     } 

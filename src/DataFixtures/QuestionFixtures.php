@@ -19,10 +19,6 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
 
         // 🔹 Récupérer toutes les catégories existantes
         $categories = $manager->getRepository(Category::class)->findAll();
-        if (empty($categories)) {
-            dump("⚠️ Aucune catégorie trouvée !");
-            return;
-        }
 
         // 🔹 Sélectionner 5 ou 6 catégories aléatoires
         shuffle($categories);
@@ -32,12 +28,19 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
         $questions = [
             [
                 "text" => "Qu'est-ce que la gestion des incidents ?",
-                "type" => "open",
+                "type" => "multiple",
                 "answers" => [
                     ["text" => "Processus de gestion des événements perturbateurs", "isTrue" => true],
                     ["text" => "Un document de sécurité", "isTrue" => false],
                     ["text" => "Une simple notification aux utilisateurs", "isTrue" => false],
                     ["text" => "Un système d'alerte automatisé", "isTrue" => true]
+                ]
+            ],
+            [
+                "text" => "Un changement en production peut être déployé immédiatement sans validation, car en préproduction : absence de bugs ?",
+                "type" => "true_false",
+                "answers" => [
+                    ["text" => "", "isTrue" => false]
                 ]
             ],
             [
@@ -49,7 +52,7 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
             ],
             [
                 "text" => "Quels sont les avantages du monitoring applicatif ?",
-                "type" => "open",
+                "type" => "multiple",
                 "answers" => [
                     ["text" => "Détecter et prévenir les pannes", "isTrue" => true],
                     ["text" => "Augmenter la charge du système inutilement", "isTrue" => false],
@@ -72,13 +75,14 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
             ],
             [
                 "text" => "Comment sécuriser une API ?",
-                "type" => "open",
+                "type" => "multiple",
                 "answers" => [
                     ["text" => "Utiliser OAuth pour l'authentification", "isTrue" => true],
                     ["text" => "Désactiver toutes les restrictions de requêtes", "isTrue" => false],
                     ["text" => "Restreindre l'accès avec des tokens", "isTrue" => true]
                 ]
-            ]
+            ],
+            
         ];
 
         foreach ($selectedCategories as $category) {
@@ -86,7 +90,6 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
 
             // 🔹 Vérification des sous-catégories
             if ($subCategories->isEmpty()) {
-                dump("⚠️ La catégorie " . $category->getName() . " n'a pas de sous-catégories !");
                 continue;
             }
 
@@ -96,12 +99,12 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
                 // 🔹 Création de la question
                 $question = new Question();
                 $question->setText($q["text"]);
+                $question->setType($q["type"]);
                 $question->setCreatedAt(new DateTimeImmutable());
                 $question->setCreatedBy($user);
                 $question->setSubCategory($subCategory);
                 $manager->persist($question);
 
-                dump("✅ Question ajoutée : " . $q["text"]);
 
                 // 🔹 Ajout des réponses
                 foreach ($q["answers"] as $answerData) {
@@ -117,7 +120,6 @@ class QuestionFixtures extends Fixture implements DependentFixtureInterface
         }
 
         $manager->flush();
-        dump("✅ Toutes les questions et réponses ont été insérées !");
     }
 
     public function getDependencies(): array

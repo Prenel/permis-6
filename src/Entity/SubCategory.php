@@ -14,12 +14,20 @@ class SubCategory
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['category-read'])]
+    #[Groups(['category-read', 'category-field', 'question-read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['category-read'])]
+    #[Groups(['category-read', 'category-field', 'question-read'])]
     private ?string $name = null;
+
+    #[ORM\ManyToOne(inversedBy: 'subCategories')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['question-read'])]
+    private ?Category $category = null;
+
+    #[ORM\OneToMany(targetEntity: Question::class, mappedBy: 'subCategory', orphanRemoval: true)]
+    private Collection $questions;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -40,12 +48,6 @@ class SubCategory
     #[ORM\ManyToOne]
     private ?User $deletedBy = null;
 
-    #[ORM\ManyToOne(inversedBy: 'subCategories')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Category $category = null;
-
-    #[ORM\OneToMany(targetEntity: Question::class, mappedBy: 'subCategory', orphanRemoval: true)]
-    private Collection $questions;
 
     public function __construct()
     {

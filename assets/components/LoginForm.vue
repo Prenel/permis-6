@@ -70,7 +70,6 @@ export default {
                     });
     
                     if (response.data.success == true){
-                        console.log(response.data);
                         window.location.href = response.data.redirectUrl;
                     } 
                 } catch (err){
