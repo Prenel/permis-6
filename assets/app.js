@@ -8,6 +8,7 @@ import '@mdi/font/css/materialdesignicons.css'
 import LoginPage from './views/LoginPage'
 import CategoryListPage from './views/Category/CategoryListPage'
 import QuestionListPage from './views/Question/QuestionListPage'
+import QuizzPage from './views/Quizz/QuizzPage'
 import Menu from './components/partial/Menu'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
@@ -43,4 +44,11 @@ if (document.getElementById('app-question')){
         .use(vuetify)
         .use(createPinia())
         .mount('#app-question');
+}
+
+if (document.getElementById('app-quizz')){
+    createApp(QuizzPage)
+        .use(vuetify)
+        .use(createPinia())
+        .mount('#app-quizz');
 }
